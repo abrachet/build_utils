@@ -57,7 +57,7 @@ static pid_t create_daemon(const char *argv[]) {
     int res = getrlimit(RLIMIT_STACK, &rl);
     assert(!res);
     (void)res;
-    rl.rlim_cur = 3 * 1024;
+    rl.rlim_cur = 1 * 1024;
     res = setrlimit(RLIMIT_STACK, &rl);
     assert(!res);
     (void)res;
@@ -82,21 +82,6 @@ static pid_t create_daemon(const char *argv[]) {
   }
 
   return pid;
-}
-
-static char *create_full_path(const char *filename) {
-  char *cwd = getcwd(0, 0);
-  size_t len = strlen(cwd);
-  char *re;
-  if ((re = realloc(cwd, len + strlen(filename))))
-    cwd = re;
-  else {
-    perror("Allocation failure");
-    (void)free(cwd);
-    return NULL;
-  }
-  strcpy(cwd + len, filename);
-  return cwd;
 }
 
 static void kill_process(int pidfd) {
@@ -157,17 +142,13 @@ static int init_restart(int argc, const char **argv) {
     return report_file_error(lockfile);
   }
 
-  char *watchfile_path = create_full_path(watchfile);
-  if (!watchfile_path)
-    return 1;
-
   if (!init) {
     if (file_is_locked(lockfile))
       kill_process(lfd);
     (void)ftruncate(lfd, 0);
   }
 
-  const char *args[] = {"watcherd", watchfile_path, NULL};
+  const char *args[] = {"watcherd", watchfile, NULL};
   pid_t pid = create_daemon(args);
   if (!pid)
     return 1;
