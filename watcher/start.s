@@ -13,9 +13,9 @@ _start:
     popq %rdi
 
     mov %rsp, %rsi
-    and $~15, %rsp
-    pushq %rax
-    pushq %rsp
+    //and $~15, %rsp
+    //pushq %rax
+    //pushq %rsp
 
     call main
     // program never exits normally it will always be killed, don't bother
