@@ -3,8 +3,8 @@
 .text
 
 # this is taken from glibc's syscall for x86
-.global _syscall
-_syscall:
+.global syscall
+syscall:
     movq %rdi, %rax
 	movq %rsi, %rdi
 	movq %rdx, %rsi
