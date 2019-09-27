@@ -27,8 +27,7 @@ static int file_is_locked(const char *name) {
   int errnoval = errno;
   (void)close(fd);
   if (locked == -1) {
-    assert(errnoval == EWOULDBLOCK);
-    (void)errnoval;
+    assert(errnoval == EWOULDBLOCK); (void)errnoval;
     errno = 0;
     return 1;
   }
@@ -37,8 +36,7 @@ static int file_is_locked(const char *name) {
 }
 
 static inline int report_file_error(const char *filename) {
-  int errval = errno;
-  assert(errval);
+  int errval = errno; assert(errval);
   fprintf(stderr, "Couldn't open '%s': %s", filename, sys_errlist[errval]);
   errno = 0;
   return 1;
@@ -55,12 +53,10 @@ static pid_t create_daemon(const char *argv[]) {
   if (!pid) {
     struct rlimit rl;
     int res = getrlimit(RLIMIT_STACK, &rl);
-    assert(!res);
-    (void)res;
+    assert(!res); (void)res;
     rl.rlim_cur = 1 * 1024;
     res = setrlimit(RLIMIT_STACK, &rl);
-    assert(!res);
-    (void)res;
+    assert(!res); (void)res;
 
     // TODO: play around with RSS size.
 
@@ -89,9 +85,8 @@ static void kill_process(int pidfd) {
   pid_t pid;
   fscanf(pidfile, "%d", &pid);
   int i = kill(pid, SIGKILL);
-  assert(!i);
-  (void)i;
-  (void)fclose(pidfile);
+  assert(!i); (void)i;
+  fclose(pidfile);
 }
 
 static int init_restart(int argc, const char **argv) {
@@ -167,8 +162,10 @@ int check(int argc, const char **argv) {
     if (file_is_locked(lockfile))
       fputs("daemon is properly running", stderr);
     fputs("daemon has been killed", stderr);
+    return 0;
   }
 
+  fprintf(stderr, "file '%s' doesn't exist\n", lockfile);
   return 0;
 }
 
